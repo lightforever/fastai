@@ -21,6 +21,8 @@ from distutils.version import LooseVersion
 
 from matplotlib import pyplot as plt, rcParams, animation
 from ipywidgets import interact, interactive, fixed, widgets
+import albumentations
+
 matplotlib.rc('animation', html='html5')
 np.set_printoptions(precision=5, linewidth=110, suppress=True)
 

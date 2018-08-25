@@ -311,3 +311,12 @@ def test_transforms_works_with_coords(): # test of backward compatible behavior
     h,w = x.shape[1:]
     np.testing.assert_equal(bbs[0], [0, 0, h-buggy_offset, w-buggy_offset], "The outer bounding box was converted correctly")
     np.testing.assert_equal(bbs[1], [0, 0, h/2-buggy_offset, w/2-buggy_offset], "The inner bounding box was converted correctly")
+
+def test_albumentations():
+    transform = AlbuTransform([albumentations.GaussNoise()], tfm_y=TfmType.CLASS)
+    image = np.ones((300, 300, 3), dtype=np.uint8)
+    mask = np.ones((300, 300), dtype=np.uint8)
+    result = transform(image, mask)
+    assert len(result)==2, 'Mask is not returned'
+    assert image.shape == result[0].shape
+

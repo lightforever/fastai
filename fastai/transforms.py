@@ -1,6 +1,7 @@
 from .imports import *
 from .layer_optimizer import *
 from enum import IntEnum
+import albumentations
 
 def scale_min(im, targ, interpolation=cv2.INTER_AREA):
     """ Scale the image so that the smallest axis is of size targ.
@@ -243,6 +244,20 @@ class Transform():
 
     @abstractmethod
     def do_transform(self, x, is_y): raise NotImplementedError
+
+class AlbuTransform(albumentations.Compose, Transform):
+    def __init__(self, transforms, p=1., tfm_y=TfmType.NO):
+        super(AlbuTransform, self).__init__(transforms, p)
+        self.tfm_y = tfm_y
+
+    def __call__(self, x, y):
+        data = {"image": x}
+        if self.tfm_y in (TfmType.PIXEL, TfmType.CLASS):
+            data["mask"] = y
+        augmented = super(AlbuTransform, self).__call__(**data)
+        if 'mask' in augmented:
+            y = augmented['mask']
+        return augmented["image"], y
 
 
 class CoordTransform(Transform):
