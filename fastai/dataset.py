@@ -44,6 +44,16 @@ def resize_fn(targ):
         return im.resize(sz, Image.LINEAR)
     return resize
 
+def read_paired_fnames(img_folder, mask_folder):
+    img_res = []
+    mask_res = []
+
+    img_folder, mask_folder = Path(img_folder), Path(mask_folder)
+    for file in img_folder.glob('*.*'):
+        img_res.append(file)
+        mask_res.append(mask_folder/file.name)
+
+    return img_res, mask_res
 
 def resize_imgs(fnames, targ, path, new_path, resume=True, fn=None):
     """
@@ -297,6 +307,13 @@ class FilesDataset(BaseDataset):
         if len(arr.shape)==3: arr = arr[None]
         return self.transform.denorm(np.rollaxis(arr,1,4))
 
+class MatchedFilesDataset(FilesDataset):
+    def __init__(self, fnames, y, transform, path):
+        self.y=y
+        assert(len(fnames)==len(y))
+        super().__init__(fnames, transform, path)
+    def get_y(self, i): return open_image(os.path.join(self.path, self.y[i]))
+    def get_c(self): return 0
 
 class FilesArrayDataset(FilesDataset):
     def __init__(self, fnames, y, transform, path):

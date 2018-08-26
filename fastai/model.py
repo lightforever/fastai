@@ -260,6 +260,13 @@ def predict_with_targs_(m, dl):
     for *x,y in iter(dl): res.append([get_prediction(to_np(m(*VV(x)))),to_np(y)])
     return zip(*res)
 
+def predict_gen(m, dl):
+    m.eval()
+    if hasattr(m, 'reset'): m.reset()
+    for *x,y in iter(dl):
+        yield to_np(m(*VV(x)))
+
+
 def predict_with_targs(m, dl):
     preda,targa = predict_with_targs_(m, dl)
     return np.concatenate(preda), np.concatenate(targa)

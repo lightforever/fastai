@@ -590,6 +590,40 @@ class OptimScheduler(LossRecorder):
         else:
             plt.xlabel("learning rate (log scale)")
             plt.xscale('log')
+            
+class SegmentationMonitorCallback(Callback):
+    def __init__(self, model, train, val, tfms, log_dir, every):
+        self.model = model
+        self.train = train
+        self.val = val
+        self.log_dir_train = Path(log_dir)/'train'
+        self.log_dir_val = Path(log_dir) / 'val'
+        self.tfms = tfms
+
+        self.log_dir_train.mkdir(exist_ok=True)
+        self.log_dir_val.mkdir(exist_ok=True)
+        self.every = every
+        self.current = 0
+    
+    def on_batch_end(self, metrics):
+        self.current+=1
+        if self.current%self.every>0:
+            return
+
+        with no_grad_context():
+            def make_img(x, y):
+                x, y = self.tfms(x, y)
+                pred = to_np(F.sigmoid(self.model(VV(x).unsqueeze(0))[0]))
+                if len(pred.shape) > 2:
+                    pred = pred[0]
+                return np.hstack([pred * 255, np.ones((pred.shape[0], 10)) * 255, y * 255])
+
+            for x, y, name in self.train:
+                cv2.imwrite(str(self.log_dir_train/name), make_img(x, y))
+
+            for x, y, name in self.val:
+                cv2.imwrite(str(self.log_dir_val / name), make_img(x, y))
+
 
 def draw_line(ax,x):
     xmin, xmax, ymin, ymax = ax.axis()

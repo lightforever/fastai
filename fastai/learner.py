@@ -383,6 +383,11 @@ class Learner():
         self.model.eval()
         return to_np(self.model(to_gpu(V(T(arr)))))
 
+    def predict_gen(self, is_test=False, use_swa=False):
+        dl = self.data.test_dl if is_test else self.data.val_dl
+        m = self.swa_model if use_swa else self.model
+        return predict_gen(m, dl)
+
     def TTA(self, n_aug=4, is_test=False):
         """ Predict with Test Time Augmentation (TTA)
 
