@@ -301,6 +301,22 @@ class AddPadding(CoordTransform):
     def do_transform(self, im, is_y):
         return cv2.copyMakeBorder(im, self.pad, self.pad, self.pad, self.pad, self.mode)
 
+class FullFillPadding(CoordTransform):
+    """ A class that represents adding paddings to an image to make it square. """
+
+    def __init__(self, tfm_y=TfmType.NO):
+        super().__init__(tfm_y)
+
+    def do_transform(self, im, is_y):
+        if im.shape[0]>im.shape[1]:
+            return np.hstack([im, np.zeros(shape=(im.shape[0], im.shape[0] -im.shape[1], im.shape[2] ))])
+
+        if im.shape[1]>im.shape[0]:
+            return np.vstack([im, np.zeros(shape=(im.shape[1] - im.shape[0], im.shape[1], im.shape[2]))])
+
+        return im
+
+
 class CenterCrop(CoordTransform):
     """ A class that represents a Center Crop.
 
@@ -702,6 +718,9 @@ def image_gen(normalizer, denorm, sz, tfms=None, max_zoom=None, pad=0, crop_type
         scale = [RandomScale(sz, max_zoom, tfm_y=tfm_y, sz_y=sz_y) if max_zoom is not None
                  else Scale(sz, tfm_y, sz_y=sz_y)]
     elif not is_listy(scale): scale = [scale]
+
+    scale.insert(0, FullFillPadding(tfm_y = tfm_y))
+
     if pad: scale.append(AddPadding(pad, mode=pad_mode))
     if crop_type!=CropType.GOOGLENET: tfms=scale+tfms
     return Transforms(sz, tfms, normalizer, denorm, crop_type,
