@@ -5,6 +5,7 @@ channels:
 - defaults
 - peterjc123
 dependencies:
+- albumentations
 - scipy
 - cuda90
 - cudnn

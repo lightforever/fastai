@@ -309,10 +309,19 @@ class FullFillPadding(CoordTransform):
 
     def do_transform(self, im, is_y):
         if im.shape[0]>im.shape[1]:
-            return np.hstack([im, np.zeros(shape=(im.shape[0], im.shape[0] -im.shape[1], im.shape[2] ))])
+            diff = im.shape[0] -im.shape[1]
+            if diff>2:
+                return np.hstack([np.zeros(shape=(im.shape[0], int(diff//2), im.shape[2])),
+                                  im, np.zeros(shape=(im.shape[0], int(diff-diff//2), im.shape[2]))])
+            return im
 
         if im.shape[1]>im.shape[0]:
-            return np.vstack([im, np.zeros(shape=(im.shape[1] - im.shape[0], im.shape[1], im.shape[2]))])
+            diff = im.shape[1] - im.shape[0]
+            if diff>2:
+                return np.vstack([np.zeros(shape=(int(diff//2), im.shape[1], im.shape[2])),
+                                  im, np.zeros(shape=(int(diff-diff//2), im.shape[1], im.shape[2]))])
+            return im
+
 
         return im
 
