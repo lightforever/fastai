@@ -9,13 +9,11 @@ from setuptools import setup
 setup(
     name = "fastai",
     packages = ['fastai', 'fastai/models', 'fastai/models/cifar10'],
-    version = '0.7.0',
+    version = '10.7.0',
     description = "The fastai deep learning and machine learning library.",
     author = "Jeremy Howard and contributors",
     author_email = "info@fast.ai",
     license = "Apache License 2.0",
-    url = "https://github.com/fastai/fastai",
-    download_url =  'https://github.com/fastai/fastai/archive/0.7.0.tar.gz',
     install_requires =
      ['bcolz', 'bleach', 'certifi', 'cycler', 'decorator', 'entrypoints', 'feather-format', 'graphviz', 'html5lib',
       'ipykernel', 'ipython', 'ipython-genutils', 'ipywidgets', 'isoweek', 'jedi', 'Jinja2', 'jsonschema', 'jupyter',

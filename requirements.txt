@@ -62,4 +62,4 @@ webencodings>=0.5.1
 widgetsnbextension>=3.0.3
 spacy>=2.0.11
 testfixtures>=6.2.0
-albumentations
+git+https://github.com/albu/albumentations.git
